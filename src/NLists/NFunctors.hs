@@ -4,26 +4,22 @@ module NLists.NFunctors where
 
 import NLists.Naturals
 
--- NFunctors - Functors that keep track of how many times they were applied (i.e. raised to power N).
+-- NFunctors, NApplicative - Functors and Applicatives that keep track of how many times they were applied (i.e. raised to power N).
 
 {-
 -- In General:
 -- pmap: Removes a level of nesting.
 -- zmap: Constant nesting.
 -- smap: Appends a level of nesting.
-
-class NFunctorM t (n :: Peano) where
-  pmapM' :: (t M a -> t (M-1) b) -> t (n+M) a -> t (n+M-1) b
-  zmapM' :: (t M a -> t M b) -> t (n+M) a -> t (n+M) b
-  smapM' :: (t M a -> t (M+1) b) -> t (n+M) a -> t (n+M+1) b
 -}
-
--- NApplicative - Applicative for NFunctors.
 
 class NFunctor t (m :: Peano) (n :: Peano) where
   pmap' :: (t (Succ m) a -> t m b) -> t (Succ n) a -> t n b
   zmap' :: (t m a -> t m b) -> t n a -> t n b
   smap' :: (t m a -> t (Succ m) b) -> t n a -> t (Succ n) b
+
+
+infixl 4 <***>
 
 class NApplicative t (m :: Peano) (n :: Peano) (o :: Peano) | m n -> o where
   pure' :: a -> t Zero a
@@ -46,5 +42,3 @@ class NFunctor2 t (n :: Peano) where
   pmap2' :: (t (Succ (Succ (Succ (Zero)))) a -> t (Succ (Succ (Zero))) b) -> t (Succ (Succ (Succ n))) a -> t (Succ (Succ n)) b
   zmap2' :: (t (Succ (Succ (Zero))) a -> t (Succ (Succ (Zero))) b) -> t (Succ (Succ n)) a -> t (Succ (Succ n)) b
   smap2' :: (t (Succ (Succ (Zero))) a -> t (Succ (Succ (Succ (Zero)))) b) -> t (Succ (Succ n)) a -> t (Succ (Succ (Succ n))) b
-
-
