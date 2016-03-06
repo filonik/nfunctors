@@ -49,17 +49,6 @@ instance (Applicative (NList n)) => Applicative (NList (Succ n)) where
   pure xs = SList [pure xs]
   (SList fs) <*> (SList xs) = SList (zipWith (<*>) fs xs)
 
-
-class Broadcastable p q r | p q -> r where
-  (<***>) :: p (a -> b) -> q a -> r b
-
-instance (o ~ (Max n m)) => Broadcastable (NList n) (NList m) (NList o) where
-  (ZList f) <***> (ZList x) = ZList (f x)
-  (ZList f) <***> (SList xs) = SList (map ((ZList f)<***>) xs)
-  (SList fs) <***> (ZList x) = SList (map (<***>(ZList x)) fs)
-  (SList fs) <***> (SList xs) = SList (zipWith (<***>) fs xs)
-
-
 instance Foldable (NList n) where
   foldMap f (ZList x) = f x 
   foldMap f (SList xs) = (foldMap . foldMap) f xs
@@ -71,6 +60,13 @@ instance (Applicative (NList n), Num a) => Num (NList n a) where
   fromInteger = pure . fromInteger
   abs = fmap abs
   signum = fmap signum
+
+instance (o ~ (Max n m)) => NApplicative NList n m o where
+  pure' = ZList
+  (ZList f) <***> (ZList x) = ZList (f x)
+  (ZList f) <***> (SList xs) = SList (map ((ZList f)<***>) xs)
+  (SList fs) <***> (ZList x) = SList (map (<***>(ZList x)) fs)
+  (SList fs) <***> (SList xs) = SList (zipWith (<***>) fs xs)
 
 instance NFunctor0 NList (Zero) where
   zmap0' f = f

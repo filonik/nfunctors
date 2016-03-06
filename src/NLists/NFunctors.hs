@@ -1,4 +1,4 @@
-{-# LANGUAGE DataKinds, FlexibleContexts, FlexibleInstances, GADTs, MultiParamTypeClasses, TypeFamilies, TypeOperators, UndecidableInstances #-}
+{-# LANGUAGE DataKinds, FlexibleContexts, FlexibleInstances, FunctionalDependencies, GADTs, MultiParamTypeClasses, TypeFamilies, TypeOperators, UndecidableInstances #-}
 
 module NLists.NFunctors where
 
@@ -32,3 +32,9 @@ class NFunctor2 t (n :: Peano) where
   zmap2' :: (t (Succ (Succ (Zero))) a -> t (Succ (Succ (Zero))) b) -> t (Succ (Succ n)) a -> t (Succ (Succ n)) b
   smap2' :: (t (Succ (Succ (Zero))) a -> t (Succ (Succ (Succ (Zero)))) b) -> t (Succ (Succ n)) a -> t (Succ (Succ (Succ n))) b
 
+
+-- NApplicative - Applicative for NFunctors.
+
+class NApplicative t (m :: Peano) (n :: Peano) (o :: Peano) | m n -> o where
+  pure' :: a -> t Zero a
+  (<***>) :: t m (a -> b) -> t n a -> t o b
