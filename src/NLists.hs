@@ -76,6 +76,11 @@ instance NFunctor NList (Zero) (Zero) where
   zmap' = id
   smap' = id
 
+instance (NFunctor NList m m) => NFunctor NList (Succ m) (Succ m) where
+  pmap' = id
+  zmap' = id
+  smap' = id
+
 instance (NFunctor NList (Zero) n) => NFunctor NList (Zero) (Succ n) where
   pmap' f (SList xs) = SList ((fmap . pmap') f xs)
   zmap' f (SList xs) = SList ((fmap . zmap') f xs)

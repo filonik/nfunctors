@@ -13,13 +13,14 @@ import NLists.Naturals
 -- smap: Appends a level of nesting.
 -}
 
+infixl 4 <***> -- Same as <*>, <**> in Applicative
+
+
 class NFunctor t (m :: Peano) (n :: Peano) where
   pmap' :: (t (Succ m) a -> t m b) -> t (Succ n) a -> t n b
   zmap' :: (t m a -> t m b) -> t n a -> t n b
   smap' :: (t m a -> t (Succ m) b) -> t n a -> t (Succ n) b
 
-
-infixl 4 <***>
 
 class NApplicative t (m :: Peano) (n :: Peano) (o :: Peano) | m n -> o where
   pure' :: a -> t Zero a
