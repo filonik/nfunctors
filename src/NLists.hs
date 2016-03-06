@@ -18,6 +18,7 @@ data NList (n :: Peano) a where
   ZList :: a -> NList Zero a
   SList :: [NList n a] -> NList (Succ n) a
 
+
 class Convertable t (n :: Peano) where
   fromList' :: List n a -> t n a
   toList' :: t n a -> List n a
@@ -46,14 +47,15 @@ instance Applicative (NList Zero) where
   (ZList f) <*> (ZList x) = ZList (f x)
 
 instance (Applicative (NList n)) => Applicative (NList (Succ n)) where
-  pure xs = SList [pure xs]
+  pure x = SList [pure x]
   (SList fs) <*> (SList xs) = SList (zipWith (<*>) fs xs)
 
 instance Foldable (NList n) where
   foldMap f (ZList x) = f x 
   foldMap f (SList xs) = (foldMap . foldMap) f xs
 
-instance (Applicative (NList n), Num a) => Num (NList n a) where
+
+instance (Num a, Applicative (NList n)) => Num (NList n a) where
   negate = fmap negate
   (+) = liftA2 (+)
   (*) = liftA2 (*)
@@ -68,20 +70,36 @@ instance (o ~ (Max n m)) => NApplicative NList n m o where
   (SList fs) <***> (ZList x) = SList (map (<***>(ZList x)) fs)
   (SList fs) <***> (SList xs) = SList (zipWith (<***>) fs xs)
 
+
+instance NFunctor NList (Zero) (Zero) where
+  pmap' = id
+  zmap' = id
+  smap' = id
+
+instance (NFunctor NList (Zero) n) => NFunctor NList (Zero) (Succ n) where
+  pmap' f (SList xs) = SList ((fmap . pmap') f xs)
+  zmap' f (SList xs) = SList ((fmap . zmap') f xs)
+  smap' f (SList xs) = SList ((fmap . smap') f xs)
+
+
+-- WIP: The generic implementations still require type annotations to work, therefore manual expansions of the above:
+
 instance NFunctor0 NList (Zero) where
-  zmap0' f = f
-  smap0' f = f
+  pmap0' = id
+  zmap0' = id
+  smap0' = id
 
 instance (NFunctor0 NList n) => NFunctor0 NList (Succ n) where
-  zmap0' f (SList xs) = SList (map (zmap0' f) xs)
-  smap0' f (SList xs) = SList (map (smap0' f) xs)
+  pmap0' f (SList xs) = SList ((fmap . pmap0') f xs)
+  zmap0' f (SList xs) = SList ((fmap . zmap0') f xs)
+  smap0' f (SList xs) = SList ((fmap . smap0') f xs)
 
 instance NFunctor1 NList (Zero) where
-  pmap1' f = f
-  zmap1' f = f
-  smap1' f = f
+  pmap1' = id
+  zmap1' = id
+  smap1' = id
 
 instance (NFunctor1 NList n) => NFunctor1 NList (Succ n) where
-  pmap1' f (SList xs) = SList (map (pmap1' f) xs)
-  zmap1' f (SList xs) = SList (map (zmap1' f) xs)
-  smap1' f (SList xs) = SList (map (smap1' f) xs)
+  pmap1' f (SList xs) = SList ((fmap . pmap1') f xs)
+  zmap1' f (SList xs) = SList ((fmap . zmap1') f xs)
+  smap1' f (SList xs) = SList ((fmap . smap1') f xs)

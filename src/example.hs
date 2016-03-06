@@ -42,8 +42,8 @@ meanof :: (Real b, Fractional c) => (a -> b) -> ([a] -> c)
 meanof f = \xs -> realToFrac (sumof f xs) / genericLength xs
 
 
-reduce :: (NFunctor1 NList n) => NList (Succ n) a -> ([a] -> b) -> NList n b
-reduce xs f = pmap1' (nmap f) xs
+reduce :: (NFunctor0 NList n) => NList (Succ n) a -> ([a] -> b) -> NList n b
+reduce xs f = pmap0' (nmap f) xs
 
 select :: (NFunctor0 NList n) => NList n a -> (a -> b) -> NList n b
 select xs f = zmap0' (nmap f) xs
