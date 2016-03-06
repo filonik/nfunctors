@@ -3,6 +3,7 @@
 module Example where
 
 import Control.Arrow
+import Control.Applicative
 import Data.Function
 import Data.List
 
@@ -13,6 +14,14 @@ import NLists
 
 -- Example: SQL-like embedded DSL
 -- Problem: https://byorgey.wordpress.com/2007/08/16/mapping-over-a-nested-functor/
+
+instance (Num b) => Num (a -> b) where
+  negate = fmap negate
+  (+) = liftA2 (+)
+  (*) = liftA2 (*)
+  fromInteger = pure . fromInteger
+  abs = fmap abs
+  signum = fmap signum
 
 sortByKey' :: (Ord b) => (a -> b) -> [a] -> [a]
 sortByKey' key = sortBy (compare `on` key)
