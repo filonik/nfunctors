@@ -1,5 +1,7 @@
 # Nested Functors
 
+See example for automatic mapping of functions over arbitrarily nested lists:
+
 ```haskell
 data Person = Person { name :: String, age :: Integer, gender :: String, status :: String } deriving Show
 
