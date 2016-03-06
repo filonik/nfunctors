@@ -15,10 +15,10 @@ persons `groupby` gender `select` age
 
 persons `groupby` gender `groupby` status `select` age
 -- [[[20]],[[18],[16]]]
-
+```
 
 Note that "`select` age" works regardless of nesting depth. You can also append or remove nesting levels:
-
+```haskell
 persons `groupby` gender `select` age `produce` (\x -> [0..x])
 -- [[[0..20]],[[0..18],[0..16]]]
 
