@@ -32,8 +32,9 @@ instance (Convertable NList n) => Convertable NList (Succ n) where
 nmap :: (Convertable t n, Convertable t m) => (List n a -> List m b) -> t n a -> t m b
 nmap f = fromList' . f . toList'
 
-instance (Convertable NList n, Show (List n a)) => Show (NList n a) where
+instance (Convertable t n, Show (List n a)) => Show (t n a) where
   show = show . toList'
+
 
 instance Functor (NList n) where
   fmap f (ZList x) = ZList (f x)

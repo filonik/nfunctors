@@ -43,8 +43,8 @@ produce :: (NFunctor0 NList n) => NList n a -> (a -> [b]) -> NList (Succ n) b
 produce xs f = smap0' (nmap f) xs
 
 
-sortby :: (NFunctor1 NList n, Ord b) => NList (Succ n) a -> (a -> b) -> NList (Succ n) a
-sortby xs key = zmap1' (nmap (sortByKey' key)) xs
+orderby :: (NFunctor1 NList n, Ord b) => NList (Succ n) a -> (a -> b) -> NList (Succ n) a
+orderby xs key = zmap1' (nmap (sortByKey' key)) xs
 
 groupby :: (NFunctor1 NList n, Ord b) => NList (Succ n) a -> (a -> b) -> NList (Succ (Succ n)) a
 groupby xs key = smap1' (nmap (groupByKey' key)) xs
