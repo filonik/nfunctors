@@ -26,8 +26,11 @@ persons `groupby` gender `reduce` (sumof age)
 -- [20, 34]
 ```
 
-Advanced example:
+Advanced examples:
 ```haskell
+persons `groupby` gender `reduce` ((sumof age) &&& (meanof age))
+-- [(20,20.0),(34,17.0)]
+
 let pbg = persons `groupby` gender in ((/) <$> (pbg `select` (realToFrac . age)) <***> (pbg `reduce` (meanof age)))
 -- [[1.0],[1.0588235294117647,0.9411764705882353]]
 ```
