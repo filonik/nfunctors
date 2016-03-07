@@ -42,5 +42,5 @@ The operators `<<$>>`, `<<*>>` are generic versions of `<$>` in Functor and `<*>
 ```haskell
 <<$>> :: (NList m a -> NList (m+x) b) -> NList n a -> NList (n+x) b
 <<*>> :: (NList m (a -> b)) -> NList n a -> NList (max m n) b
-pure' :: (NList 0 a)
+pure' :: a -> (NList 0 a)
 ```
