@@ -1,5 +1,7 @@
 # Nested Functors
 
+### Usage
+
 See example for automatic mapping of functions over arbitrarily nested lists:
 
 ```haskell
@@ -38,7 +40,9 @@ let abg = persons <<$$>> groupby (gender) <<$$>> select (age) in ((/) <$> (abg <
 -- [[1.0],[1.0588235294117647,0.9411764705882353]]
 ```
 
-The operators `<<$>>`, `<<*>>` are generic versions of `<$>` in Functor and `<*>` in Applicative.
+### Details
+
+The operators `<<$>>`, `<<*>>` are generic versions of `<$>` in Functor and `<*>` in Applicative, `<<$$>>` and `<<**>>` are flipped.
 ```haskell
 <<$>> :: (NList m a -> NList (m+x) b) -> NList n a -> NList (n+x) b
 <<*>> :: (NList m (a -> b)) -> NList n a -> NList (max m n) b
