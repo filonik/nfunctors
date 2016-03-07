@@ -86,6 +86,11 @@ instance (NFunctor NList (Zero) n) => NFunctor NList (Zero) (Succ n) where
   zmap' f (SList xs) = SList ((fmap . zmap') f xs)
   smap' f (SList xs) = SList ((fmap . smap') f xs)
 
+instance (NFunctor NList (Succ (Zero)) (Succ n)) => NFunctor NList (Succ (Zero)) (Succ (Succ n)) where
+  pmap' f (SList xs) = SList ((fmap . pmap') f xs)
+  zmap' f (SList xs) = SList ((fmap . zmap') f xs)
+  smap' f (SList xs) = SList ((fmap . smap') f xs)
+
 
 -- WIP: The generic implementations still require type annotations to work, therefore manual expansions of the above:
 

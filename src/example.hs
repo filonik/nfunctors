@@ -1,27 +1,36 @@
-{-# LANGUAGE DataKinds, FlexibleContexts, FlexibleInstances, GADTs, MultiParamTypeClasses, TypeFamilies, TypeOperators, UndecidableInstances #-}
+{-# LANGUAGE DataKinds, FlexibleContexts, FlexibleInstances, GADTs, MultiParamTypeClasses, ScopedTypeVariables, TypeFamilies, TypeOperators, UndecidableInstances #-}
 
 module Example where
+
+import Prelude hiding (not,(&&),(||),(==),(/=),(<=),(>=),(<),(>))
+import qualified Prelude as P
 
 import Control.Arrow
 import Control.Applicative
 import Data.Function
 import Data.List
 
+import NLists.GenericPrelude
 import NLists.Naturals
 import NLists.NFunctors
 import NLists
 
-
 -- Example: SQL-like embedded DSL
 -- Problem: https://byorgey.wordpress.com/2007/08/16/mapping-over-a-nested-functor/
 
-instance (Num b) => Num (a -> b) where
-  negate = fmap negate
-  (+) = liftA2 (+)
-  (*) = liftA2 (*)
-  fromInteger = pure . fromInteger
-  abs = fmap abs
-  signum = fmap signum
+class Selectable t m0 m1 n0 n1 | m0 n0 n1 -> m1, m0 m1 n0 -> n1 where
+  fmap' :: (t m0 a -> t m1 b) -> (t n0 a) -> t n1 b
+  (<$$>) :: (t n0 a) -> (t m0 a -> t m1 b) -> t n1 b
+  (<$$>) = flip fmap'
+
+instance (NFunctor NList Zero n) => Selectable NList Zero Zero n n where fmap' = zmap'
+instance (NFunctor NList Zero n) => Selectable NList Zero (Succ Zero) n (Succ n) where fmap' = smap'
+instance (NFunctor NList Zero n) => Selectable NList (Succ Zero) Zero (Succ n) n where fmap' = pmap'
+
+instance (NFunctor NList (Succ Zero) n) => Selectable NList (Succ (Zero)) (Succ (Zero)) n n where fmap' = zmap'
+instance (NFunctor NList (Succ Zero) n) => Selectable NList (Succ (Zero)) (Succ (Succ (Zero))) n (Succ n) where fmap' = smap'
+instance (NFunctor NList (Succ Zero) n) => Selectable NList (Succ (Succ (Zero))) (Succ (Zero)) (Succ n) n where fmap' = pmap'
+
 
 sortByKey' :: (Ord b) => (a -> b) -> [a] -> [a]
 sortByKey' key = sortBy (compare `on` key)
@@ -32,31 +41,39 @@ groupByKey' key = groupBy ((==) `on` key)
 sortAndGroupByKey' :: (Ord b) => (a -> b) -> [a] -> [[a]]
 sortAndGroupByKey' key = groupByKey' key . sortByKey' key
 
-sumof :: (Num b) => (a -> b) -> ([a] -> b)
-sumof f = (foldr (+) 0) . (map f)
+minOf :: (Ord b) => (a -> b) ->([a] -> b)
+minOf f = minimum . (map f)
 
-productof :: (Num b) => (a -> b) -> ([a] -> b)
-productof f = (foldr (*) 1) . (map f)
+maxOf :: (Ord b) => (a -> b) ->([a] -> b)
+maxOf f = maximum . (map f)
 
-meanof :: (Real b, Fractional c) => (a -> b) -> ([a] -> c)
-meanof f = \xs -> realToFrac (sumof f xs) / genericLength xs
+sumOf :: (Num b) => (a -> b) -> ([a] -> b)
+sumOf f = (foldr (+) 0) . (map f)
 
+prodOf :: (Num b) => (a -> b) -> ([a] -> b)
+prodOf f = (foldr (*) 1) . (map f)
 
-reduce :: (NFunctor0 NList n) => NList (Succ n) a -> ([a] -> b) -> NList n b
-reduce xs f = pmap0' (nmap f) xs
-
-select :: (NFunctor0 NList n) => NList n a -> (a -> b) -> NList n b
-select xs f = zmap0' (nmap f) xs
-
-produce :: (NFunctor0 NList n) => NList n a -> (a -> [b]) -> NList (Succ n) b
-produce xs f = smap0' (nmap f) xs
+meanOf :: (Real b, Fractional c) => (a -> b) -> ([a] -> c)
+meanOf f = \xs -> realToFrac (sumOf f xs) / genericLength xs
 
 
-orderby :: (NFunctor1 NList n, Ord b) => NList (Succ n) a -> (a -> b) -> NList (Succ n) a
-orderby xs key = zmap1' (nmap (sortByKey' key)) xs
+select = nmap :: (a -> b) -> NList Zero a -> NList Zero b
+produce = nmap :: (a -> [b]) -> NList Zero a -> NList (Succ Zero) b
+reduce = nmap :: ([a] -> b) -> NList (Succ Zero) a -> NList Zero b
 
-groupby :: (NFunctor1 NList n, Ord b) => NList (Succ n) a -> (a -> b) -> NList (Succ (Succ n)) a
-groupby xs key = smap1' (nmap (groupByKey' key)) xs
+select' = nmap :: ([a] -> [b]) -> NList (Succ Zero) a -> NList (Succ Zero) b
+produce' = nmap :: ([a] -> [[b]]) -> NList (Succ Zero) a -> NList (Succ (Succ Zero)) b
+reduce' = nmap :: ([[a]] -> [b]) -> NList (Succ (Succ Zero)) a -> NList (Succ Zero) b
+
+filterby :: (a -> Bool) -> NList (Succ Zero) a -> NList (Succ Zero) a
+filterby f = select' (filter f)
+
+orderby :: (Ord b) => (a -> b) -> NList (Succ Zero) a ->  NList (Succ Zero) a
+orderby f = select' (sortByKey' f)
+
+groupby :: (Ord b) => (a -> b) -> NList (Succ Zero) a -> NList (Succ (Succ Zero)) a
+groupby f = produce' (groupByKey' f)
+
 
 
 data Person = Person { name :: String, age :: Integer, gender :: String, status  :: String } deriving Show
