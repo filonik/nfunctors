@@ -2,6 +2,7 @@
 
 module NLists.NFunctors where
 
+import NLists.GenericPrelude
 import NLists.Naturals
 
 -- NFunctors, NApplicative - Functors and Applicatives that keep track of how many times they were applied (i.e. raised to power N).
@@ -27,19 +28,16 @@ class NApplicative t (m :: Peano) (n :: Peano) (o :: Peano) | m n -> o where
   (<***>) :: t m (a -> b) -> t n a -> t o b
 
 
--- WIP: The generic implementations still require type annotations to work, therefore manual expansions of the above:
+-- TODO: Generalize without causing overlapping instances...
 
-class NFunctor0 t (n :: Peano) where
-  pmap0' :: (t (Succ (Zero)) a -> t (Zero) b) -> t (Succ n) a -> t n b
-  zmap0' :: (t (Zero) a -> t (Zero) b) -> t n a -> t n b
-  smap0' :: (t (Zero) a -> t (Succ (Zero)) b) -> t n a -> t (Succ n) b
+instance (NFunctor t (Zero) n) => GenericFunctor (t (Zero)) (t (Zero)) (t n) (t n) where fmap' = zmap'
+instance (NFunctor t (Zero) n) => GenericFunctor (t (Zero)) (t (Succ (Zero))) (t n) (t (Succ n)) where fmap' = smap'
+instance (NFunctor t (Zero) n) => GenericFunctor (t (Succ (Zero))) (t (Zero)) (t (Succ n)) (t n) where fmap' = pmap'
 
-class NFunctor1 t (n :: Peano) where
-  pmap1' :: (t (Succ (Succ (Zero))) a -> t (Succ (Zero)) b) -> t (Succ (Succ n)) a -> t (Succ n) b
-  zmap1' :: (t (Succ (Zero)) a -> t (Succ (Zero)) b) -> t (Succ n) a -> t (Succ n) b
-  smap1' :: (t (Succ (Zero)) a -> t (Succ (Succ (Zero))) b) -> t (Succ n) a -> t (Succ (Succ n)) b
+instance (NFunctor t (Succ (Zero)) n) => GenericFunctor (t (Succ (Zero))) (t (Succ (Zero))) (t n) (t n) where fmap' = zmap'
+instance (NFunctor t (Succ (Zero)) n) => GenericFunctor (t (Succ (Zero))) (t (Succ (Succ (Zero)))) (t n) (t (Succ n)) where fmap' = smap'
+instance (NFunctor t (Succ (Zero)) n) => GenericFunctor (t (Succ (Succ (Zero)))) (t (Succ (Zero))) (t (Succ n)) (t n) where fmap' = pmap'
 
-class NFunctor2 t (n :: Peano) where
-  pmap2' :: (t (Succ (Succ (Succ (Zero)))) a -> t (Succ (Succ (Zero))) b) -> t (Succ (Succ (Succ n))) a -> t (Succ (Succ n)) b
-  zmap2' :: (t (Succ (Succ (Zero))) a -> t (Succ (Succ (Zero))) b) -> t (Succ (Succ n)) a -> t (Succ (Succ n)) b
-  smap2' :: (t (Succ (Succ (Zero))) a -> t (Succ (Succ (Succ (Zero)))) b) -> t (Succ (Succ n)) a -> t (Succ (Succ (Succ n))) b
+instance (NFunctor t (Succ (Succ (Zero))) n) => GenericFunctor (t (Succ (Succ (Zero)))) (t (Succ (Succ (Zero)))) (t n) (t n) where fmap' = zmap'
+instance (NFunctor t (Succ (Succ (Zero))) n) => GenericFunctor (t (Succ (Succ (Zero)))) (t (Succ (Succ (Succ (Zero))))) (t n) (t (Succ n)) where fmap' = smap'
+instance (NFunctor t (Succ (Succ (Zero))) n) => GenericFunctor (t (Succ (Succ (Succ (Zero))))) (t (Succ (Succ (Zero)))) (t (Succ n)) (t n) where fmap' = pmap'

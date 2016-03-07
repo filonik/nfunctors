@@ -31,8 +31,9 @@ instance (Convertable NList n) => Convertable NList (Succ n) where
   fromList' xs = SList (map fromList' xs)
   toList' (SList xs) = map toList' xs
 
-nmap :: (Convertable t n, Convertable t m) => (List n a -> List m b) -> t n a -> t m b
-nmap f = fromList' . f . toList'
+nlift :: (Convertable t n, Convertable t m) => (List n a -> List m b) -> t n a -> t m b
+nlift f = fromList' . f . toList'
+
 
 instance (Convertable t n, Show (List n a)) => Show (t n a) where
   show = show . toList'
@@ -71,6 +72,8 @@ instance (o ~ (Max n m)) => NApplicative NList n m o where
   (SList fs) <***> (SList xs) = SList (zipWith (<***>) fs xs)
 
 
+-- TODO: Generalize without causing overlapping instances...
+
 instance NFunctor NList (Zero) (Zero) where
   pmap' = id
   zmap' = id
@@ -91,25 +94,7 @@ instance (NFunctor NList (Succ (Zero)) (Succ n)) => NFunctor NList (Succ (Zero))
   zmap' f (SList xs) = SList ((fmap . zmap') f xs)
   smap' f (SList xs) = SList ((fmap . smap') f xs)
 
-
--- WIP: The generic implementations still require type annotations to work, therefore manual expansions of the above:
-
-instance NFunctor0 NList (Zero) where
-  pmap0' = id
-  zmap0' = id
-  smap0' = id
-
-instance (NFunctor0 NList n) => NFunctor0 NList (Succ n) where
-  pmap0' f (SList xs) = SList ((fmap . pmap0') f xs)
-  zmap0' f (SList xs) = SList ((fmap . zmap0') f xs)
-  smap0' f (SList xs) = SList ((fmap . smap0') f xs)
-
-instance NFunctor1 NList (Zero) where
-  pmap1' = id
-  zmap1' = id
-  smap1' = id
-
-instance (NFunctor1 NList n) => NFunctor1 NList (Succ n) where
-  pmap1' f (SList xs) = SList ((fmap . pmap1') f xs)
-  zmap1' f (SList xs) = SList ((fmap . zmap1') f xs)
-  smap1' f (SList xs) = SList ((fmap . smap1') f xs)
+instance (NFunctor NList (Succ (Succ (Zero))) (Succ (Succ n))) => NFunctor NList (Succ (Succ (Zero))) (Succ (Succ (Succ n))) where
+  pmap' f (SList xs) = SList ((fmap . pmap') f xs)
+  zmap' f (SList xs) = SList ((fmap . zmap') f xs)
+  smap' f (SList xs) = SList ((fmap . smap') f xs)

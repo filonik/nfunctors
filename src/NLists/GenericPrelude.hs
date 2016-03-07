@@ -6,6 +6,7 @@ import Prelude hiding (not,(&&),(||),(==),(/=),(<=),(>=),(<),(>))
 import qualified Prelude as P
 
 import Control.Applicative
+import Data.Functor.Identity
 
 -- Same as in Prelude
 
@@ -16,6 +17,17 @@ infix 4 <=
 infix 4 >=
 infix 4 <
 infix 4 >
+
+infixl 4 <$$> -- Same as <$> in Functor
+
+class GenericFunctor p q r s | p q r -> s, p r s -> q where
+  fmap' :: (p a -> q b) -> r a -> s b
+  (<$$>) :: r a -> (p a -> q b) -> s b
+  (<$$>) =  flip (fmap')
+
+instance (Functor t) => GenericFunctor Identity Identity t t where
+  fmap' f = fmap (runIdentity . f . Identity)
+
 
 class GenericBool a where
   not :: a -> a
