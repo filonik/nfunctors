@@ -5,6 +5,7 @@ module NLists where
 import Control.Applicative
 import Data.Foldable
 
+import NLists.GenericPrelude
 import NLists.Naturals
 import NLists.NFunctors
 
@@ -64,12 +65,13 @@ instance (Num a, Applicative (NList n)) => Num (NList n a) where
   abs = fmap abs
   signum = fmap signum
 
+
 instance (o ~ (Max n m)) => NApplicative NList n m o where
   pure' = ZList
-  (ZList f) <***> (ZList x) = ZList (f x)
-  (ZList f) <***> (SList xs) = SList (map ((ZList f)<***>) xs)
-  (SList fs) <***> (ZList x) = SList (map (<***>(ZList x)) fs)
-  (SList fs) <***> (SList xs) = SList (zipWith (<***>) fs xs)
+  (ZList f) <<*>> (ZList x) = ZList (f x)
+  (ZList f) <<*>> (SList xs) = SList (map ((ZList f)<<*>>) xs)
+  (SList fs) <<*>> (ZList x) = SList (map (<<*>>(ZList x)) fs)
+  (SList fs) <<*>> (SList xs) = SList (zipWith (<<*>>) fs xs)
 
 
 -- TODO: Generalize without causing overlapping instances...

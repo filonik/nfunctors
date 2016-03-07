@@ -18,16 +18,32 @@ infix 4 >=
 infix 4 <
 infix 4 >
 
-infixl 4 <$$> -- Same as <$> in Functor
+infixl 4 <<$>> -- Same as <$> in Functor
+infixl 4 <<$$>> -- Same as <$> in Functor
+--infixl 4 <<*>> -- Same as <*> in Applicative
+--infixl 4 <<**>> -- Same as <*> in Applicative
 
 class GenericFunctor p q r s | p q r -> s, p r s -> q where
   fmap' :: (p a -> q b) -> r a -> s b
-  (<$$>) :: r a -> (p a -> q b) -> s b
-  (<$$>) =  flip (fmap')
+  (<<$>>) :: (p a -> q b) -> r a -> s b
+  (<<$$>>) :: r a -> (p a -> q b) -> s b
+  (<<$>>) = fmap'
+  (<<$$>>) = flip (<<$>>)
 
 instance (Functor t) => GenericFunctor Identity Identity t t where
   fmap' f = fmap (runIdentity . f . Identity)
 
+{-
+class GenericApplicative p q r s | q r s -> p where
+  pure' :: a -> p a
+  (<<*>>) :: q (a -> b) -> r a -> s b
+  (<<**>>) :: r a -> q (a -> b) -> s b
+  (<<**>>) = flip (<<*>>)
+  
+instance (Applicative t) => GenericApplicative t t t t where
+  pure' = pure
+  (<<*>>) = (<*>)
+-}
 
 class GenericBool a where
   not :: a -> a

@@ -14,7 +14,8 @@ import NLists.Naturals
 -- smap: Appends a level of nesting.
 -}
 
-infixl 4 <***> -- Same as <*>, <**> in Applicative
+infixl 4 <<*>> -- Same as <*> in Applicative
+infixl 4 <<**>> -- Same as <*> in Applicative
 
 
 class NFunctor t (m :: Peano) (n :: Peano) where
@@ -25,7 +26,9 @@ class NFunctor t (m :: Peano) (n :: Peano) where
 
 class NApplicative t (m :: Peano) (n :: Peano) (o :: Peano) | m n -> o where
   pure' :: a -> t Zero a
-  (<***>) :: t m (a -> b) -> t n a -> t o b
+  (<<*>>) :: t m (a -> b) -> t n a -> t o b
+  (<<**>>) :: t n a -> t m (a -> b) -> t o b
+  (<<**>>) = flip (<<*>>)
 
 
 -- TODO: Generalize without causing overlapping instances...
