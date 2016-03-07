@@ -53,8 +53,11 @@ sumOf f = (foldr (+) 0) . (map f)
 prodOf :: (Num b) => (a -> b) -> ([a] -> b)
 prodOf f = (foldr (*) 1) . (map f)
 
+mean :: (Real a, Fractional b) => [a] -> b
+mean xs = realToFrac (sum xs) / genericLength xs
+
 meanOf :: (Real b, Fractional c) => (a -> b) -> ([a] -> c)
-meanOf f = \xs -> realToFrac (sumOf f xs) / genericLength xs
+meanOf f = mean . (map f)
 
 
 select = nmap :: (a -> b) -> NList Zero a -> NList Zero b
