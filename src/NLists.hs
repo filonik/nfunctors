@@ -81,7 +81,7 @@ instance NFunctor NList (Zero) (Zero) where
   zmap' = id
   smap' = id
 
-instance (NFunctor NList m m) => NFunctor NList (Succ m) (Succ m) where
+instance (NFunctor NList  m m) => NFunctor NList (Succ m) (Succ m) where
   pmap' = id
   zmap' = id
   smap' = id
