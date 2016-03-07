@@ -2,7 +2,7 @@
 
 module Example where
 
-import Prelude hiding (not,(&&),(||),(==),(/=),(<=),(>=),(<),(>),fmap,(<$>))
+import Prelude hiding (not,(&&),(||),(==),(/=),(<=),(>=),(<),(>))
 import qualified Prelude as P
 
 import Control.Arrow
