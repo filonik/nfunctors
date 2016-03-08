@@ -46,7 +46,7 @@ The operators `<<$>>`, `<<*>>` are generic versions of `<$>` in Functor and `<*>
 ```haskell
 <<$>> :: (NList m0 a -> NList m1 b) -> NList n0 a -> NList n1 b -- where n1 = n0 + (m1 - m0)
 <<*>> :: (NList m0 (a -> b)) -> NList n0 a -> NList n1 b -- where n1 = max(n0, m0) 
-pure' :: a -> NList 0 a
+pure' :: a -> NList 0 a -- (NFunctor f) => (f 0) <=> Identity
 ```
 
 Examples (Pseudocode):
