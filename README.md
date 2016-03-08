@@ -52,6 +52,6 @@ pure' :: a -> NList 0 a
 Examples (Pseudocode):
 ```haskell
 select :: (a -> b) -> (NList 0 a -> NList 0 b) -- <<$>> :: (NList 0 a -> NList 0 b) -> NList n a -> NList n b
-orderby :: (Ord b) => (a->b) -> (NList 1 a -> NList 1 a) -- <<$>> :: (NList 1 a -> NList 1 a) -> NList n a -> NList (n+0) a
-groupby :: (Ord b) => (a->b) -> (NList 1 a -> NList 2 a) -- <<$>> :: (NList 1 a -> NList 2 a) -> NList n a -> NList (n+1) a
+orderby :: (Ord b) => (a -> b) -> (NList 1 a -> NList 1 a) -- <<$>> :: (NList 1 a -> NList 1 a) -> NList n a -> NList (n+0) a
+groupby :: (Ord b) => (a -> b) -> (NList 1 a -> NList 2 a) -- <<$>> :: (NList 1 a -> NList 2 a) -> NList n a -> NList (n+1) a
 ```
