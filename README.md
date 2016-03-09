@@ -44,7 +44,14 @@ let abg = persons <<$$>> groupby (gender) <<$$>> select (age) in ((/) <$> (abg <
 
 The operators `<<$>>`, `<<*>>` are generic versions of `<$>` in Functor and `<*>` in Applicative, `<<$$>>` and `<<**>>` are flipped.
 ```haskell
-<<$>> :: (NList m a -> NList (m+x) b) -> NList n a -> NList (n+x) b
-<<*>> :: (NList m (a -> b)) -> NList n a -> NList (max m n) b
-pure' :: a -> NList 0 a
+<<$>> :: (NList m0 a -> NList m1 b) -> NList n0 a -> NList n1 b -- where n1 = n0 + (m1 - m0)
+<<*>> :: (NList m0 (a -> b)) -> NList n0 a -> NList n1 b -- where n1 = max(n0, m0) 
+pure' :: a -> NList 0 a -- (NFunctor f) => (f 0) <=> Identity
+```
+
+Examples (Pseudocode):
+```haskell
+select :: (a -> b) -> (NList 0 a -> NList 0 b) -- <<$>> :: (NList 0 a -> NList 0 b) -> NList n a -> NList n b
+orderby :: (Ord b) => (a -> b) -> (NList 1 a -> NList 1 a) -- <<$>> :: (NList 1 a -> NList 1 a) -> NList n a -> NList (n+0) a
+groupby :: (Ord b) => (a -> b) -> (NList 1 a -> NList 2 a) -- <<$>> :: (NList 1 a -> NList 2 a) -> NList n a -> NList (n+1) a
 ```
