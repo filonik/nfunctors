@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances, FunctionalDependencies, MultiParamTypeClasses #-}
 
-module NLists.GenericPrelude where
+module Data.Generic.Prelude where
 
 import Prelude hiding (not,(&&),(||),(==),(/=),(<=),(>=),(<),(>))
 import qualified Prelude as P
@@ -17,7 +17,6 @@ infix 4 <=
 infix 4 >=
 infix 4 <
 infix 4 >
-
 
 class GenericBool a where
   not :: a -> a

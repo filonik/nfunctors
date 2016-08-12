@@ -1,6 +1,6 @@
 {-# LANGUAGE DataKinds, FlexibleContexts, FlexibleInstances, GADTs, MultiParamTypeClasses, TypeFamilies, TypeOperators, UndecidableInstances #-}
 
-module NLists.Naturals where
+module Data.Nested.Naturals where
 
 import GHC.TypeLits hiding ((+)(), (*)(), (-)(), (^)())
 import qualified GHC.TypeLits as N
@@ -16,10 +16,6 @@ type N2 = Succ N1
 type N3 = Succ N2
 type N4 = Succ N3
 type N5 = Succ N4
-
-infixr 8  ^
-infixl 7  *
-infixl 6  +
 
 type family (x :: Peano) + (y :: Peano) :: Peano where
   'Zero + y = y
@@ -37,7 +33,13 @@ type family (x :: Peano) ^ (y :: Peano) :: Peano where
   x ^ 'Zero = 'Succ 'Zero
   x ^ ('Succ y) = x * x ^ y
 
-type family (x :: Peano) < (y :: Peano) where
+type family (x :: Peano) == (y :: Peano) :: Bool where
+   'Zero == 'Zero = 'True
+   x == 'Zero = 'False
+   'Zero == y = 'False
+   'Succ x == 'Succ y = x == y
+ 
+type family (x :: Peano) < (y :: Peano) :: Bool where
    x < 'Zero = 'False
    'Zero < y = 'True
    'Succ x < 'Succ y = x < y
